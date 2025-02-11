@@ -43,10 +43,10 @@ export class AuthService {
   async registerByEmail(dto: RegisterByEmailDto) {
     const { email, password, username } = dto;
 
-    const existingUser = await this.userService.findOneByEmail(email);
-    if (existingUser) {
-      throw new BadRequestException('User with this email already exists');
-    }
+    // const existingUser = await this.userService.findOneByEmail(email);
+    // if (existingUser) {
+    //   throw new BadRequestException('User with this email already exists');
+    // }
 
     const newUser = await this.userService.add(password, username, email);
     return this.generateTokens(newUser.id, email);

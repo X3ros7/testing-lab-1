@@ -1,4 +1,12 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { RideService } from './ride.service';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { OrderRideDto } from './dto/order.dto';
@@ -13,5 +21,10 @@ export class RideController {
   @Post('order')
   async order(@Body() dto: OrderRideDto, @Request() req) {
     return this.rideService.order(dto, req.user.email);
+  }
+
+  @Get('ride/:id')
+  async getRideInfo(@Param('id') id: string) {
+    return this.rideService.getRideDetails(id);
   }
 }

@@ -1,12 +1,16 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { OrderRideDto } from './dto/order.dto';
 import { UserService } from 'src/user/user.service';
-import { Ride } from './interfaces/ride.interface';
+import { InjectModel } from '@nestjs/mongoose';
+import { Ride } from './schemas/ride.schema';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class RideService {
-  private readonly rides: Ride[] = [];
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    @InjectModel(Ride.name) private readonly rideModel: Model<Ride>,
+    private readonly userService: UserService,
+  ) {}
 
   async order(dto: OrderRideDto, email: string) {
     const user = await this.userService.findOneByEmail(email);
@@ -15,16 +19,22 @@ export class RideService {
     }
 
     const { destination, distance, discount } = dto;
+    const cost = (await this.countCost(distance, discount)) * -1;
+    const ride = new this.rideModel({ destination, distance, user, cost });
+    ride.save();
 
-    const cost = await this.countCost(distance, discount);
-    const ride: Ride = {
-      destination,
-      distance,
-      user: user.username,
-      cost,
+    return {
+      status: 'ok',
+      ride,
     };
+  }
 
-    this.rides.push(ride);
+  async getRideDetails(rideId: string) {
+    const ride = await this.rideModel.findById(rideId);
+    if (!ride) {
+      throw new NotFoundException('Ride not found');
+    }
+
     return {
       status: 'ok',
       ride,
