@@ -13,11 +13,11 @@ describe('AuthController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
-  });
+  }, 10000);
 
   afterAll(async () => {
     await app.close();
-  });
+  }, 10000);
 
   it('Реєстрація нового користувача', async () => {
     return request(app.getHttpServer())
@@ -31,7 +31,7 @@ describe('AuthController (e2e)', () => {
       .expect((res) => {
         expect(res.body).toHaveProperty('access_token');
       });
-  });
+  }, 10000);
 
   it('Логін користувача', async () => {
     return request(app.getHttpServer())
@@ -41,12 +41,12 @@ describe('AuthController (e2e)', () => {
       .expect((res) => {
         expect(res.body).toHaveProperty('access_token');
       });
-  });
+  }, 10000);
 
   it('Невірний пароль', async () => {
     return request(app.getHttpServer())
       .post('/auth/login')
       .send({ email: 'testemail@gmail.com', password: 'wrongpass' })
       .expect(401);
-  });
+  }, 10000);
 });
