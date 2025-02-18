@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    paths-ignore:
+      - '.gitignore'
+      - 'README.md'
+      - 'LICENSE'
+      - 'Dockerfile'
+      - 'docker-compose.yml'
+      - '.dockerignore'
+    branches: [master]
+  pull_request:
+    branches: [master]
+    paths-ignore:
+      - '.gitignore'
+      - 'README.md'
+      - 'LICENSE'
+      - 'Dockerfile'
+      - 'docker-compose.yml'
+      - '.dockerignore'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run build
+        run: npm run build
+
+      - name: Run format check
+        run: npm run format -- --check
+
+      - name: Run E2E test
+        run: npm run test:e2e
+
+      - name: Run other tests
+        run: npm run test
+
+      - name: Commit changes if any formatting was done
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git add .
+          git commit -m "Auto format code" || echo "No formatting changes"
+          git push || echo "No changes to push"
+        if: success() && steps.format.outcome == 'success' # Only try to commit and push if format was successful

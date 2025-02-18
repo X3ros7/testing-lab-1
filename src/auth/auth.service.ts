@@ -4,7 +4,7 @@ import {
   Logger,
   UnauthorizedException,
 } from '@nestjs/common';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import {
@@ -43,10 +43,10 @@ export class AuthService {
   async registerByEmail(dto: RegisterByEmailDto) {
     const { email, password, username } = dto;
 
-    // const existingUser = await this.userService.findOneByEmail(email);
-    // if (existingUser) {
-    //   throw new BadRequestException('User with this email already exists');
-    // }
+    const existingUser = await this.userService.findOneByEmail(email);
+    if (existingUser) {
+      throw new BadRequestException('User with this email already exists');
+    }
 
     const newUser = await this.userService.add(password, username, email);
     return this.generateTokens(newUser.id, email);

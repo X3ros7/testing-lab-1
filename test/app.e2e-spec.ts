@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from './../src/app.module';
+import { AppModule } from '../src/app.module';
 
-describe('AppController (e2e)', () => {
+describe('AuthController (e2e)', () => {
   let app: INestApplication;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -15,10 +15,38 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () => {
+  afterAll(async () => {
+    await app.close();
+  });
+
+  it('Реєстрація нового користувача', async () => {
     return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+      .post('/auth/register/email')
+      .send({
+        username: 'testuser',
+        password: 'testpass',
+        email: 'testemail@gmail.com',
+      })
+      .expect(201)
+      .expect((res) => {
+        expect(res.body).toHaveProperty('access_token');
+      });
+  });
+
+  it('Логін користувача', async () => {
+    return request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: 'testemail@gmail.com', password: 'testpass' })
+      .expect(201)
+      .expect((res) => {
+        expect(res.body).toHaveProperty('access_token');
+      });
+  });
+
+  it('Невірний пароль', async () => {
+    return request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: 'testemail@gmail.com', password: 'wrongpass' })
+      .expect(401);
   });
 });

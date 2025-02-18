@@ -1,6 +1,10 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { OrderRideDto } from './dto/order.dto';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Ride } from './schemas/ride.schema';
 import { Model } from 'mongoose';

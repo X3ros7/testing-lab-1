@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { User } from 'src/user/schemas/user.schema';
+import { User } from '../../user/schemas/user.schema';
 
 @Schema()
 export class Ride {
@@ -17,4 +17,4 @@ export class Ride {
   cost: number;
 }
 
-export const RideSchema = SchemaFactory.createForClass(Ride)
+export const RideSchema = SchemaFactory.createForClass(Ride);

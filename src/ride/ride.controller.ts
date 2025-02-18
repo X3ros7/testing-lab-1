@@ -8,7 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { RideService } from './ride.service';
-import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { AuthGuard } from '../auth/guards/auth.guard';
 import { OrderRideDto } from './dto/order.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
